@@ -1,0 +1,13 @@
+- hosts: webserver
+  become: true
+  tasks:
+    - name: clone source code from github to workers
+      git: repo=https://github.com/Sonal0409/DevOpsCodeDemo.git dest=/tmp/cep-code
+    - name: Build the code via maven and package into war file
+      command: chdir=/tmp/cep-code mvn package
+    - name: copy war file into same directory as Dockerfile
+      copy: src=/tmp/cep-code/target/addressbook.war dest=/tmp/cep-code/ remote_src=yes
+    - name: build dockerfile
+      command: chdir=/tmp/cep-code docker build -t klsimage .
+    - name: run newly built tomcat container
+      command: docker run -d -P klsimage
