@@ -1,0 +1,13 @@
+- hosts: webserver
+  become: true
+  tasks:
+  - name: update apt-get repo
+    command: sudo apt-get update
+  - name: install git, maven, and docker
+    package: name={{item}} state=present
+    loop:
+     - git
+     - maven
+     - docker-ce
+  - name: start docker service
+    service: name=docker state=started
